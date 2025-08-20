@@ -78,6 +78,11 @@ source venv/bin/activate
 # Instalar dependencias
 pip install -r requirements.txt
 
+# Crear archivo .env
+# Desarrollo
+FLASK_ENV=desarrollo
+JWT_SECRET_KEY=clave-secreta-jwt
+
 # Ejecutar aplicación
 python app.py
 ```
@@ -248,18 +253,6 @@ GET    /api                         # Información general
 
 ---
 
-## **CONFIGURACIÓN**
-
-### **Variables de Entorno**
-
-```bash
-# Desarrollo
-FLASK_ENV=development
-JWT_SECRET_KEY=clave-secreta-jwt
-MAX_FILE_SIZE=16777216  # 16MB
-
-```
-
 ### **Problemas Comunes**
 
 **Error: Base de datos no encontrada**
@@ -303,3 +296,4 @@ Sistema completo de gestión de documentos corporativos que cumple con todos los
 - Empresas que manejan información sensible
 - Organizaciones con múltiples niveles de acceso
 - Aplicaciones que necesitan autenticación multifactor
+
