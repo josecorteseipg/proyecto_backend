@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <div class="card card-soft p-4">
+      <div class="text-center mb-4">
+        <h1 class="h4 mb-1">
+          <i class="bi bi-box-arrow-in-right text-primary"></i> Iniciar sesión
+        </h1>
+        <p class="text-muted mb-0">Sistema de Gestión de Documentos Seguros - IPG 2025</p>
+      </div>
+
+      <!-- Formulario de Login -->
+      <form id="formulario-login" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo electrónico</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" id="email" name="email" class="form-control" placeholder="usuario@ejemplo.com" required
+              autocomplete="email" aria-describedby="ayuda-email">
+          </div>
+          <div id="ayuda-email" class="form-text">Usa correo de prueba.</div>
+          <div class="invalid-feedback">Ingresa un correo válido.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" id="password" name="password" class="form-control"
+              placeholder="Ingresa tu contraseña" required autocomplete="current-password">
+          </div>
+          <div class="invalid-feedback">La contraseña es obligatoria.</div>
+        </div>
+
+        <button type="submit"
+          class="btn btn-primary w-100 d-inline-flex align-items-center justify-content-center gap-2" id="btn-iniciar">
+          <span class="texto-boton">Iniciar sesión</span>
+          <span class="spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <!-- Usuarios de Prueba -->
+      <div class="mt-4 p-3 bg-light rounded-3">
+        <h2 class="h6 mb-2 d-flex align-items-center gap-2">
+          <i class="bi bi-people"></i> Usuarios de prueba
+        </h2>
+        <div class="d-flex flex-column gap-2">
+          <button
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 justify-content-start usuario-prueba"
+            data-email="admin@test.com" data-password="admin123">
+            <i class="bi bi-shield-check"></i> Admin (admin@test.com)
+          </button>
+          <button
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 justify-content-start usuario-prueba"
+            data-email="supervisor@test.com" data-password="supervisor123">
+            <i class="bi bi-person-workspace"></i> Supervisor (supervisor@test.com)
+          </button>
+          <button
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 justify-content-start usuario-prueba"
+            data-email="usuario@test.com" data-password="usuario123">
+            <i class="bi bi-person"></i> Usuario (usuario@test.com)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const formularioLogin = document.getElementById('formulario-login');
+    const btnIniciar = document.getElementById('btn-iniciar');
+    const textoBoton = btnIniciar.querySelector('.texto-boton');
+    const spinner = btnIniciar.querySelector('.spinner-border');
+    const usuariosPrueba = document.querySelectorAll('.usuario-prueba');
+
+    function mostrarNotificacion(mensaje, tipo = 'info') {
+      const contenedor = document.getElementById('contenedor-notificaciones');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${tipo} shadow-0 border-0 mb-2`;
+      alert.innerHTML = `<div class="d-flex align-items-center gap-2">
+      <i class="bi ${tipo === 'success' ? 'bi-check-circle' : tipo === 'danger' ? 'bi-x-circle' : 'bi-info-circle'}"></i>
+      <div>${mensaje}</div>
+      <button type="button" class="btn-close ms-auto" aria-label="Cerrar"></button>
+    </div>`;
+      contenedor.appendChild(alert);
+      alert.querySelector('.btn-close').addEventListener('click', () => alert.remove());
+      setTimeout(() => alert.remove(), 5000);
+    }
+
+    function setCargando(cargando) {
+      btnIniciar.disabled = cargando;
+      spinner.classList.toggle('visually-hidden', !cargando);
+      textoBoton.classList.toggle('visually-hidden', cargando);
+    }
+
+    async function realizarLogin(email, password) {
+      setCargando(true);
+      try {
+        const resp = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const datos = await resp.json();
+        if (resp.ok) {
+          localStorage.setItem('access_token', datos.access_token);
+          localStorage.setItem('usuario_datos', JSON.stringify(datos.usuario));
+          mostrarNotificacion('Inicio de sesión exitoso. Redirigiendo…', 'success');
+          setTimeout(() => { window.location.href = '/dashboard'; }, 800);
+        } else {
+          mostrarNotificacion(datos.error || 'Error al iniciar sesión', 'danger');
+        }
+      } catch (e) {
+        console.error(e);
+        mostrarNotificacion('Error de conexión. Verifica tu internet.', 'danger');
+      } finally {
+        setCargando(false);
+      }
+    }
+
+    formularioLogin.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!formularioLogin.checkValidity()) {
+        formularioLogin.classList.add('was-validated');
+        mostrarNotificacion('Revisa los campos del formulario.', 'warning');
+        return;
+      }
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      realizarLogin(email, password);
+    });
+
+    usuariosPrueba.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('email').value = btn.dataset.email;
+        document.getElementById('password').value = btn.dataset.password;
+        realizarLogin(btn.dataset.email, btn.dataset.password);
+      });
+    });
+
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      fetch('/api/auth/verificar', { headers: { 'Authorization': `Bearer ${token}` } })
+        .then(r => r.ok ? window.location.href = '/dashboard' : Promise.resolve())
+        .catch(() => { /* ignorar */ });
+    }
+
+    document.getElementById('email').focus();
+  });
+</script>
+
+<style>
+  .usuario-prueba {
+    transition: .15s ease-in-out;
+  }
+
+  .usuario-prueba:hover {
+    background-color: var(--bs-primary);
+    color: #fff;
+    border-color: var(--bs-primary);
+  }
+</style>
+{% endblock %}

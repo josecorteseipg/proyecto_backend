@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<div class="layout-dashboard">
+    <div class="row g-3">
+        <!-- SIDEBAR FILTROS -->
+        <aside class="col-12 col-lg-3 col-xl-2">
+            <div class="card card-soft sidebar-filtros p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h2 class="h6 mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-funnel"></i> Filtros
+                    </h2>
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none" data-bs-toggle="collapse"
+                        data-bs-target="#filtros-collapse" aria-expanded="false" aria-controls="filtros-collapse">
+                        <i class="bi bi-sliders"></i>
+                    </button>
+                </div>
+
+                <div id="filtros-collapse" class="collapse d-lg-block">
+                    <div class="mb-3">
+                        <label for="busqueda-documentos" class="form-label">Buscar</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" id="busqueda-documentos" class="form-control"
+                                placeholder="Buscar documentos…">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="filtro-nivel" class="form-label">Nivel</label>
+                        <select id="filtro-nivel" class="form-select">
+                            <option value="">Todos los niveles</option>
+                            <option value="publico">Público</option>
+                            <option value="confidencial">Confidencial</option>
+                            <option value="secreto" id="opcion-secreto">Secreto</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="filtro-ordenar" class="form-label">Ordenar por</label>
+                        <select id="filtro-ordenar" class="form-select">
+                            <option value="fecha_creacion">Fecha de creación</option>
+                            <option value="nombre">Nombre</option>
+                            <option value="tamano">Tamaño</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Categoría</label>
+                        <input type="text" id="filtro-categoria" class="form-control" placeholder="Ej: Proyectos">
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Desde fecha</label>
+                            <input type="date" id="filtro-fecha-desde" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Hasta fecha</label>
+                            <input type="date" id="filtro-fecha-hasta" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Etiquetas</label>
+                        <input type="text" id="filtro-tags" class="form-control" placeholder="importante, legal">
+                    </div>
+
+                    <div class="d-grid">
+                        <button id="aplicar-filtros" class="btn btn-primary">
+                            <i class="bi bi-check2-circle"></i> Aplicar filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <section class="col-12 col-lg-9 col-xl-10">
+            <div class="row g-3">
+                <!-- Fila superior: Card de subir documentos -->
+                <div class="col-12">
+                    <div class="card card-soft p-3">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                            <h2 class="h6 mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-upload"></i> Subir documento
+                            </h2>
+                            <button class="btn btn-outline-secondary d-lg-none" data-bs-toggle="modal"
+                                data-bs-target="#modal-subir-documento">
+                                <i class="bi bi-file-earmark-plus"></i> Abrir modal
+                            </button>
+                        </div>
+
+                        <!-- Zona de arrastre y selección -->
+                        <form id="formulario-subir-documento" enctype="multipart/form-data">
+                            <div class="dropzone text-center p-4" id="zona-subida" role="button" tabindex="0"
+                                aria-describedby="ayuda-formatos">
+                                <i class="bi bi-folder2-open display-6 d-block mb-2"></i>
+                                <div class="fw-semibold">Arrastra archivos aquí o haz clic para seleccionar</div>
+                                <div id="ayuda-formatos" class="text-muted small">PDF, DOC, DOCX, TXT, JPG, PNG, XLSX,
+                                    PPTX (máx. 16MB)</div>
+                                <input type="file" id="archivo-documento" name="archivo" class="d-none"
+                                    accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xlsx,.pptx" />
+                            </div>
+
+                            <div id="info-archivo" class="oculto mt-3 p-3 bg-light rounded-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <strong id="nombre-archivo"></strong>
+                                        <div class="small text-muted" id="info-archivo-detalles"></div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" id="quitar-archivo" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i> Quitar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6">
+                                    <label for="nombre-documento" class="form-label">Nombre del documento *</label>
+                                    <input type="text" id="nombre-documento" name="nombre" class="form-control"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="nivel-seguridad" class="form-label">Nivel de seguridad *</label>
+                                    <select id="nivel-seguridad" name="nivel_seguridad" class="form-select" required>
+                                        <option value="publico">Público</option>
+                                        <option value="confidencial">Confidencial</option>
+                                        <option value="secreto" id="opcion-secreto-modal">Secreto</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="categoria-documento" class="form-label">Categoría</label>
+                                    <input type="text" id="categoria-documento" name="categoria" class="form-control"
+                                        placeholder="Ej: Empresarial, Personal, Proyectos">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="tags-documento" class="form-label">Etiquetas</label>
+                                    <input type="text" id="tags-documento" name="tags" class="form-control"
+                                        placeholder="Separadas por comas: importante, urgente">
+                                </div>
+                                <div class="col-12">
+                                    <label for="descripcion-documento" class="form-label">Descripción</label>
+                                    <textarea id="descripcion-documento" name="descripcion" class="form-control"
+                                        rows="2" placeholder="Descripción breve…"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+                                <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2"
+                                    id="boton-guardar-documento">
+                                    <span class="texto-guardar"><i class="bi bi-save2"></i> Guardar</span>
+                                    <span class="spinner-guardar spinner-border spinner-border-sm visually-hidden"
+                                        role="status" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Fila inferior: "Tree" de documentos -->
+                <div class="col-12">
+                    <div class="card card-soft">
+                        <div class="card-header bg-white border-0 pb-0">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h3 class="h6 mb-0 d-flex align-items-center gap-2">
+                                    <i class="bi bi-folder2"></i> Mis documentos
+                                </h3>
+                                <div class="d-none d-lg-flex align-items-center gap-2 text-muted small">
+                                    <span class="tree-col-head w-name">Nombre</span>
+                                    <span class="tree-col-head w-size">Tamaño</span>
+                                    <span class="tree-col-head w-date">Fecha</span>
+                                    <span class="tree-col-head w-level">Nivel</span>
+                                    <span class="tree-col-head w-actions">Acciones</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group list-group-flush tree-list" id="lista-documentos-tree" role="tree">
+                            <!-- Aquí renderiza tu árbol dinámicamente -->
+                        </div>
+
+                        <nav id="contenedor-paginacion" class="paginacion p-3" aria-label="Paginación de documentos">
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- MODALES -->
+<div class="modal fade" id="modal-ver-documento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title d-flex align-items-center gap-2" id="titulo-documento-modal">
+                    <i class="bi bi-file-earmark-text"></i> Detalle del documento
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" id="contenido-documento-modal"></div>
+            <div class="modal-footer border-0 d-flex flex-wrap gap-2" id="acciones-documento-modal"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-otp" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-lock"></i> Código de seguridad requerido
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <p class="text-muted">Esta acción requiere autenticación de dos factores.</p>
+                <p><strong>Ingresa el código de 6 dígitos de tu aplicación de autenticación:</strong></p>
+                <div class="mb-3">
+                    <input type="text" id="codigo-otp" class="form-control text-center" placeholder="000000"
+                        maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <div class="alert alert-warning">
+                    <small><strong>Tip:</strong> El código se actualiza cada 30 segundos</small>
+                </div>
+                <div class="mt-3 pt-3 border-top">
+                    <p class="text-muted small mb-2">¿Problemas con el código?</p>
+                    <button type="button" id="btn-reconfigurar-otp" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-arrow-clockwise"></i> Reconfigurar OTP
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="confirmar-otp" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-check2-circle"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-configurar-otp" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurar Autenticación de Dos Factores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="paso-1-qr" class="paso-configuracion">
+                    <h6>Paso 1: Escanear Código QR</h6>
+                    <p class="text-muted">Escanea este código QR con tu aplicación de autenticación (Google
+                        Authenticator, Authy, etc.)</p>
+                    <div class="text-center mb-3">
+                        <img id="imagen-qr-otp" src="" alt="Código QR" class="img-fluid border rounded"
+                            style="max-width: 200px;">
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Apps recomendadas:</strong>
+                        <ul class="mb-0">
+                            <li>Google Authenticator</li>
+                            <li>Microsoft Authenticator</li>
+                            <li>Authy</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="paso-2-validacion" class="paso-configuracion">
+                    <h6>Paso 2: Validar Configuración</h6>
+                    <p class="text-muted">Ingresa el código de 6 dígitos que aparece en tu aplicación:</p>
+                    <div class="mb-3">
+                        <input type="text" id="codigo-validacion-inicial" class="form-control text-center"
+                            placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btn-generar-qr" class="btn btn-primary">
+                    <span class="spinner-border spinner-border-sm d-none me-2"></span>
+                    Generar QR
+                </button>
+                <button type="button" id="btn-validar-configuracion" class="btn btn-success d-none">
+                    <span class="spinner-border spinner-border-sm d-none me-2"></span>
+                    Activar OTP
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- JS -->
+<script src="/static/js/api.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/documentos.js"></script>
+<script src="/static/js/otp.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Autenticación
+        if (!verificarAutenticacion()) {
+            window.location.href = '/login';
+            return;
+        }
+        inicializarDashboard();
+        cargarDocumentos();
+        configurarEventos();
+    });
+    function inicializarDashboard() {
+        // Verificar permisos para documentos secretos
+        const datosUsuario = obtenerDatosUsuario();
+        if (datosUsuario.rol === 'usuario') {
+            const opcionSecreto = document.getElementById('opcion-secreto');
+            if (opcionSecreto) {
+                opcionSecreto.style.display = 'none';
+            }
+        }
+        // Configurar zona de arrastrar y soltar
+        configurarZonaSubida();
+    }
+    // Dropzone (reutiliza utilidades previas)
+    function configurarZonaSubida() {
+        const zonaSubida = document.getElementById('zona-subida');
+        const inputArchivo = document.getElementById('archivo-documento');
+
+        // Click para seleccionar archivo
+        zonaSubida.addEventListener('click', () => inputArchivo.click());
+
+        // Eventos de drag & drop
+        zonaSubida.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zonaSubida.classList.add('arrastrando');
+        });
+
+        zonaSubida.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            zonaSubida.classList.remove('arrastrando');
+        });
+
+        zonaSubida.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zonaSubida.classList.remove('arrastrando');
+
+            const archivos = e.dataTransfer.files;
+            if (archivos.length > 0) {
+                inputArchivo.files = archivos;
+                mostrarInfoArchivo(archivos[0]);
+            }
+        });
+
+        // Cambio de archivo
+        inputArchivo.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                mostrarInfoArchivo(e.target.files[0]);
+            }
+        });
+
+        // Quitar archivo
+        document.getElementById('quitar-archivo').addEventListener('click', () => {
+            inputArchivo.value = '';
+            document.getElementById('info-archivo').classList.add('oculto');
+            document.getElementById('nombre-documento').value = '';
+        });
+    }
+
+    function configurarEventos() {
+        // Eventos de búsqueda y filtros
+        document.getElementById('busqueda-documentos').addEventListener('input', debounce(buscarDocumentos, 500));
+        document.getElementById('filtro-nivel').addEventListener('change', cargarDocumentos);
+        document.getElementById('filtro-ordenar').addEventListener('change', cargarDocumentos);
+        document.getElementById('aplicar-filtros').addEventListener('click', cargarDocumentos);
+
+
+        // Formulario de subir documento
+        document.getElementById('formulario-subir-documento').addEventListener('submit', manejarSubidaDocumento);
+
+        // Eventos de OTP
+        document.getElementById('generar-otp').addEventListener('click', generarNuevoOTP);
+        document.getElementById('confirmar-otp').addEventListener('click', confirmarAccionConOTP);
+    }
+
+    function mostrarInfoArchivo(archivo) {
+        document.getElementById('nombre-archivo').textContent = archivo.name;
+        document.getElementById('info-archivo-detalles').textContent = `${formatearTamano(archivo.size)} • ${archivo.type || 'Tipo desconocido'}`;
+        const nombreDocumento = document.getElementById('nombre-documento');
+        const nombreSinExt = archivo.name.replace(/\.[^/.]+$/, '');
+        if (!nombreDocumento.value) nombreDocumento.value = nombreSinExt;
+        document.getElementById('info-archivo').classList.remove('oculto');
+    }
+    function formatearTamano(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    function debounce(fn, wait) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(null, args), wait); }; }
+    function buscarDocumentos() {
+        cargarDocumentos();
+    }
+</script>
+{% endblock %}

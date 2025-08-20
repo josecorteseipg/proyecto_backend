@@ -1,0 +1,262 @@
+/* styles.css minimalista y profesional */
+/* Paleta y tokens */
+:root {
+  --color-primario: #0d6efd;
+  /* Azul Bootstrap */
+  --color-fondo: #f8f9fa;
+  /* Gris claro */
+  --color-texto: #212529;
+}
+
+html, body {
+  height: 100%
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Ubuntu, 'Helvetica Neue', Arial, sans-serif
+}
+
+/* Tarjetas y contenedores */
+.card-soft {
+  background: #fff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  box-shadow: none
+}
+
+/* Botones personalizados suaves */
+.btn-upload {
+  box-shadow: none
+}
+
+.btn:focus, .form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .15)
+}
+
+/* Formularios */
+.form-control, .form-select {
+  border-radius: .5rem
+}
+
+.input-group-text {
+  background: #fff
+}
+
+/* Notificaciones flotantes accesibles */
+.alerta-flotante {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1080;
+  max-width: 380px
+}
+
+.notificacion-exito {
+  background: #10b981;
+  color: white;
+}
+
+.notificacion-error {
+  background: #ef4444;
+  color: white;
+}
+
+.notificacion-info {
+  background: #64748b;
+  color: white;
+}
+
+.notificacion-advertencia {
+  background: #f59e0b;
+  color: #000;
+}
+
+/* Utilidades */
+.oculto {
+  display: none !important
+}
+
+.bg-body {
+  background-color: var(--color-fondo) !important
+}
+
+/* Paginación sencilla */
+.paginacion {
+  display: flex;
+  gap: .5rem;
+  justify-content: center
+}
+
+/* Zona de arrastre */
+.dropzone {
+  cursor: pointer
+}
+
+/* Navbar */
+.navbar-brand .bi {
+  font-size: 1.2rem
+}
+
+/* --- Mejoras de tarjetas de documentos y responsive (compatibilidad) --- */
+.doc-card {
+  background: #fff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem
+}
+
+.doc-card:hover {
+  border-color: rgba(13, 110, 253, .35)
+}
+
+/* Grupo de acciones (botones) */
+.btn-accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .5rem;
+  background: #fff
+}
+
+.btn-accion .bi {
+  font-size: 1rem
+}
+
+.btn-accion:hover {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+  background: #f5f9ff
+}
+
+/* ===== Dashboard con sidebar + tree ===== */
+.layout-dashboard .sidebar-filtros {
+  position: sticky;
+  top: 1rem
+}
+
+.dropzone {
+  border: 2px dashed var(--bs-border-color);
+  border-radius: .75rem;
+  transition: background-color .15s, border-color .15s
+}
+
+.dropzone.arrastrando {
+  border-color: var(--bs-primary);
+  background-color: #f0f6ff
+}
+
+.tree-list {
+  --w-name: 40%;
+  --w-size: 12%;
+  --w-date: 16%;
+  --w-level: 12%;
+  --w-actions: 20%
+}
+
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 1rem
+}
+
+.tree-cell {
+  color: #495057
+}
+
+.tree-cell.w-name {
+  flex: 1 1 var(--w-name);
+  display: flex;
+  align-items: center
+}
+
+.tree-cell.w-size {
+  flex: 0 0 var(--w-size)
+}
+
+.tree-cell.w-date {
+  flex: 0 0 var(--w-date)
+}
+
+.tree-cell.w-level {
+  flex: 0 0 var(--w-level)
+}
+
+.tree-cell.w-actions {
+  flex: 0 0 var(--w-actions);
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end
+}
+
+.tree-col-head {
+  opacity: .7
+}
+
+/* Botón de expandir */
+.btn-toggle {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .5rem;
+  background: #fff
+}
+
+.btn-toggle:hover {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary)
+}
+
+/* Responsive del tree */
+@media (max-width: 992px) {
+  .tree-list {
+    --w-name: 60%;
+    --w-size: 14%;
+    --w-date: 0%;
+    --w-level: 14%;
+    --w-actions: 12%
+  }
+
+  .tree-cell.w-date {
+    display: none
+  }
+}
+
+@media (max-width: 576px) {
+  .tree-list {
+    --w-name: 66%;
+    --w-size: 16%;
+    --w-level: 0%;
+    --w-actions: 18%
+  }
+
+  .tree-cell.w-level {
+    display: none
+  }
+}
+
+/* Accesibilidad y movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important
+  }
+}
+
+/* Ajuste de inputs para pantallas pequeñas */
+@media (max-width: 576px) {
+  .input-group>.form-control, .form-select {
+    font-size: .95rem
+  }
+}
